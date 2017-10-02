@@ -1,0 +1,3 @@
+FROM agileiot/agile-core-armv7l:v0.2.3
+
+CMD [ "bash", "/usr/src/app/scripts/start.sh" ]

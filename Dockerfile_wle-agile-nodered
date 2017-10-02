@@ -1,0 +1,5 @@
+FROM agileiot/agile-nodered-armv7l:v0.1.5 
+
+EXPOSE 1880
+
+CMD mkdir -p .nodered/node_modules && node index
