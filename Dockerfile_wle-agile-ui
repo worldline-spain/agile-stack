@@ -1,5 +1,0 @@
-FROM agileiot/agile-ui-armv7l:v0.3.7
-
-EXPOSE 1337
-
-CMD caddy -log stdout

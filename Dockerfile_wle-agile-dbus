@@ -1,3 +1,0 @@
-FROM agileiot/agile-dbus-armv7l:v0.1.0
-
-CMD dbus-daemon --address=unix:path=/usr/src/app/.agile_bus/agile_bus_socket --config-file=/usr/src/app/agile.conf

@@ -1,3 +1,0 @@
-FROM hypriot/rpi-node:6.11.0
-
-CMD ["node", "-v"]

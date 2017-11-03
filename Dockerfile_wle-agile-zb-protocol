@@ -1,3 +1,0 @@
-FROM agileiot/agile-zb-armv7l 
-
-CMD ./dbus_server.py

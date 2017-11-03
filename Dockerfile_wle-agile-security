@@ -1,6 +1,0 @@
-FROM agileiot/agile-security-armv7l:v1.0.4
-
-EXPOSE 3000
-ENV DEBUG_IDM_WEB 1
-ENV DEBUG_IDM_CORE 1
-CMD ./Start.sh
