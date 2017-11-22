@@ -1,7 +1,80 @@
 FROM hypriot/rpi-node:6.11.0
 
+# Install other apt deps
+RUN apt-get update && apt-get install -y \
+  apt-utils \
+  clang \
+  xserver-xorg-core \
+  xserver-xorg-input-all \
+  xserver-xorg-video-fbdev \
+  xorg \
+  xinput \
+  libdbus-1-dev \
+  libgtk2.0-dev \
+  libnotify-dev \
+  libgnome-keyring-dev \
+  libgconf2-dev \
+  libasound2-dev \
+  libcap-dev \
+  libcups2-dev \
+  libxtst-dev \
+  libxss1 \
+  libnss3-dev \
+  fluxbox \
+  libsmbclient \
+  libssh-4 \
+  fbset \
+  supervisor \
+  unzip \
+  libexpat-dev && rm -rf /var/lib/apt/lists/*
+  
+RUN mkdir -p /var/log/supervisor
+
+# Set Xorg and FLUXBOX preferences
+RUN mkdir ~/.fluxbox
+RUN echo "xset s off" > ~/.fluxbox/startup \
+  && echo "xserver-command=X -s 0 dpms" >> ~/.fluxbox/startup 
+
+RUN echo "#!/bin/bash" > /etc/X11/xinit/xserverrc \
+  && echo "" >> /etc/X11/xinit/xserverrc \
+  && echo 'exec /usr/bin/X -s 0 dpms -nocursor -nolisten tcp "$@"' >> /etc/X11/xinit/xserverrc
+
+
 WORKDIR /usr/src/app
 
-COPY wle-agile-tento-app/index.js  index.js
+#COPY wle-agile-tento-app/index.js  index.js
 
-CMD ["node", "index.js"]
+#CMD ["node", "index.js"]
+
+## uncomment if you want systemd
+ENV INITSYSTEM on
+
+#supervisor configuration file
+RUN echo "[supervisord]" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "nodaemon=true" >> /etc/supervisor/conf.d/supervisord.conf
+
+RUN echo "[program:electron]" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "command=/bin/bash /usr/src/app/start.sh" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "priority=1" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "stdout_logfile=/dev/stdout" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "stdout_logfile_maxbytes=0" >> /etc/supervisor/conf.d/supervisord.conf
+
+#RUN echo "[program:xinput]" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "command=/bin/bash /usr/src/app/xinput_setup.sh" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "priority=2" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "startretries=5000" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "stdout_logfile=/dev/stdout" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "stdout_logfile_maxbytes=0" >> /etc/supervisor/conf.d/supervisord.conf
+
+#RUN echo "[program:resin_wifi_connect]" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "command=/bin/bash /usr/src/app/resin_wifi_connect_setup.sh" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "priority=3" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "startretries=5000" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "stdout_logfile=/dev/stdout" >> /etc/supervisor/conf.d/supervisord.conf
+#RUN echo "stdout_logfile_maxbytes=0" >> /etc/supervisor/conf.d/supervisord.conf
+
+RUN echo "version 0" >> /etc/version.conf
+
+# Start supervisor
+CMD ["/usr/bin/supervisord"]
+
