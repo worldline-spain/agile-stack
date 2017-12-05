@@ -37,6 +37,7 @@ import xbee
 
 import struct
 import time
+import datetime
 import json
 
 # -----------------------
@@ -87,22 +88,61 @@ class XBee_ZigBee_Obj(dbP.ProtocolObj):
 
       # decode received data with the format SensorNum - SensorType - SensorVal - Counter (01-Motion-ON-0)
       raw_sensor_data = data["rf_data"].decode("utf-8")
-      #raw_sensor_data = raw_sensor_data.replace("PUT_DATE", str_tstamp)
+      # raw_sensor_data = raw_sensor_data.replace("PUT_DATE", str_tstamp)
       cooked_data = json.loads(raw_sensor_data)
-      cooked_data["data"]["date"] = str_tstamp
-      sensor_type = cooked_data["type"]
-      cooked_data["id"] = hex_long_addr + "_" + sensor_type
-      print("raw_sensor_data", raw_sensor_data, " -> ", cooked_data)
-
+      
       if hex_long_addr in self._last_read_for_device: 
          device_data = self._last_read_for_device[hex_long_addr]
       else:
          device_data = dict()
-
-      device_data[sensor_type] = json.dumps(cooked_data)
       
-      #device_data[sensor_num] = sensor_data
+      cooked_data["data"]["date"] = str_tstamp
+      sensor_type = cooked_data["type"]
+      
+      cooked_data["id"] = hex_long_addr + "_" + sensor_type
+      
+      if sensor_type == "beacon":
+        print("beacon data detected!!")
+        
+        if sensor_type in device_data.keys():
+            beacon_list_str=device_data[sensor_type];
+        else:
+            beacon_list_str = "[]";
+        
+        beacon_list=json.loads(beacon_list_str)
+        
+        #filtrar los beacons con data.date que tengan mas de 10 segundos de vida y que tengan el mismo beacon id, major y minor
+        self.PurgeBeaconList(beacon_list,cooked_data["data"]["value"]["ibeaconid"],cooked_data["data"]["value"]["major"],cooked_data["data"]["value"]["minor"])
+        
+        beacon_list.append(cooked_data["data"])
+        
+        dump_cooked_data = json.dumps(beacon_list)
+      else:
+        dump_cooked_data = json.dumps(cooked_data)
+      
+      print("raw_sensor_data", raw_sensor_data, " -> ", dump_cooked_data) 
+      device_data[sensor_type] = dump_cooked_data
+      # device_data[sensor_num] = sensor_data
       self._last_read_for_device[hex_long_addr] = device_data
+      
+      
+   def PurgeBeaconList(self,beacon_list,beaconId,major,minor):
+
+        secondspurgeTimestamp=(datetime.datetime.now()-datetime.timedelta(seconds=30))
+
+        beacon_delete_list=[];
+        
+        for beacon in beacon_list:
+            if ((beacon["value"]["ibeaconid"]==beaconId) and (beacon["value"]["major"]==major) and (beacon["value"]["minor"]==minor)):
+                beacon_delete_list.append(beacon)
+            else:
+                if  (datetime.datetime.strptime(beacon["date"], '%Y-%m-%d %H:%M:%S')< secondspurgeTimestamp):   
+                    beacon_delete_list.append(beacon)
+        
+        for beacon in beacon_delete_list:
+            beacon_list.remove(beacon)
+           
+            
        
    # Override DBus object methods
    @dbus.service.method(db_cons.BUS_NAME, in_signature="s", out_signature="")
@@ -203,13 +243,13 @@ class XBee_ZigBee_Obj(dbP.ProtocolObj):
              # for key, val in self._last_read_for_device[deviceId].items():
              # rdata += '{"deviceId":"'+deviceId+'","sensor_type":"'+val['sensor_type']+'","sensor_val":"'+val['sensor_val']+'","tstamp":"'+val['tstamp']+'"}'
              
-             #rdata = (self._last_read_for_device[deviceId][sensorName]['sensor_type'] +
+             # rdata = (self._last_read_for_device[deviceId][sensorName]['sensor_type'] +
              #         "," + 
              #         self._last_read_for_device[deviceId][sensorName]['sensor_val'] +
              #         "," +
              #         self._last_read_for_device[deviceId][sensorName]['tstamp'])
              rdata = self._last_read_for_device[deviceId][sensorName]
-       #print("--- Read device=", deviceId, " sensor=", sensorName, " rdata=", rdata)
+       # print("--- Read device=", deviceId, " sensor=", sensorName, " rdata=", rdata)
        return bytearray(rdata, "ascii")
   
    @dbus.service.method(db_cons.BUS_NAME, in_signature="ss", out_signature="")
@@ -220,9 +260,9 @@ class XBee_ZigBee_Obj(dbP.ProtocolObj):
 
        # deviceId is like xbee_zigbee0013a20040f9a03c : protocol name (lowercase) + device address !!!!!
        deviceId = deviceId.replace(PROTOCOL_NAME.lower(), "")
-       #print("--- Read device=", deviceId, " value=", value)
+       # print("--- Read device=", deviceId, " value=", value)
            
-       self._module.send("tx", dest_addr_long=bytearray.fromhex(deviceId), data=bytearray(value,"ascii"))
+       self._module.send("tx", dest_addr_long=bytearray.fromhex(deviceId), data=bytearray(value, "ascii"))
        return
 
    

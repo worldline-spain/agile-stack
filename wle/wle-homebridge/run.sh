@@ -55,9 +55,14 @@ fi
 
 rm -f /var/run/dbus/pid /var/run/avahi-daemon/pid
 
-dbus-daemon --system
-avahi-daemon -D
+echo "starting dbus-daemon"
+#dbus-daemon --system
+service dbus start
+echo "starting avahi-daemon"
+#avahi-daemon -D
+service avahi-daemon start
 
+echo "starting homebridge"
 # Start Homebridge
 if [ "$HOMEBRIDGE_ENV" ]
 then
