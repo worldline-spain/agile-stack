@@ -55,6 +55,7 @@ services:
       - 1880:1880/tcp
     links:
       - agile-core:agile
+      - agile-mqtt:mqtt
     restart: always
 
   agile-security:
@@ -87,10 +88,32 @@ services:
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/usr/src/app/.agile_bus/agile_bus_socket
     restart: always
 
-  wl-tento-app:
-    container_name: wl-tento-app
-    image: jordiescudero/wle-agile-tento-app:$WLE_VERSION
-    depends_on:
-      - agile-core
-    command: [ "node","index.js" ]
+  agile-mqtt:
+    container_name: agile-mqtt
+    image: fstehle/rpi-mosquitto
+    hostname: agile-mqtt
+    ports:
+      - 1883:1883/tcp
+      - 9001:9001/tcp
     restart: always
+
+  agile-hombridge:
+   container_name: agile-hombridge
+   image: valentinalexeev/rpi-homebridge-homeassistant
+   hostname: agile-hombridge
+   network_mode: "host"
+   restart: always
+   volumes:
+      - /mnt/data/rpi-docker-homebridge-homeassistant:/root
+#      - /etc/localtime:/etc/localtime
+   ports:
+      - "5353:5353"
+      - "51826:51826"
+
+#  wl-tento-app:
+#    container_name: wl-tento-app
+#    image: jordiescudero/wle-agile-tento-app:1.0_display
+#    depends_on:
+#      - agile-core
+#    command: [ "node","index.js" ]
+#    restart: always
