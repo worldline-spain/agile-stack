@@ -99,7 +99,7 @@ services:
 
   agile-hombridge:
    container_name: agile-hombridge
-   image: valentinalexeev/rpi-homebridge-homeassistant
+   image: jordiescudero/wle-homebridge:0.1.1
    hostname: agile-hombridge
    network_mode: "host"
    restart: always
@@ -109,6 +109,9 @@ services:
    ports:
       - "5353:5353"
       - "51826:51826"
+   links:
+      - agile-mqtt:mqtt
+restart: always
 
 #  wl-tento-app:
 #    container_name: wl-tento-app

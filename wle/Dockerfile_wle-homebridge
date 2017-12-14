@@ -22,6 +22,8 @@ RUN npm config set unsafe-perm true
 	
 RUN npm install -g homebridge --unsafe-perm
 
+RUN npm install -g homebridge-mqtt --unsafe-perm
+
 # MISC settings
 #COPY wle-homebridge/avahi-daemon.conf /etc/avahi/avahi-daemon.conf
 

@@ -11,6 +11,14 @@
     "accessories": [        
     ],
 
-    "platforms": [        
+    "platforms": [    
+		{
+	  "platform": "mqtt",
+	  "name": "mqtt",
+	  "url": "mqtt://mqtt",
+	  "topic_type": "single",
+	  "topic_prefix": "homebridge"
+	}
+    
     ]
 }
