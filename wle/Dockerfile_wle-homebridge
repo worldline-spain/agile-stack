@@ -1,6 +1,6 @@
 FROM hypriot/rpi-node:8
 
-RUN [ "cross-build-start" ]
+
 
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
@@ -25,7 +25,7 @@ RUN npm install -g homebridge --unsafe-perm
 RUN npm install -g homebridge-mqtt --unsafe-perm
 
 # MISC settings
-#COPY wle-homebridge/avahi-daemon.conf /etc/avahi/avahi-daemon.conf
+COPY wle-homebridge/avahi-daemon.conf /etc/avahi/avahi-daemon.conf
 
 USER root
 

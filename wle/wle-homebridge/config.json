@@ -15,7 +15,7 @@
 		{
 	  "platform": "mqtt",
 	  "name": "mqtt",
-	  "url": "mqtt://mqtt",
+	  "url": "mqtt://resin.local",
 	  "topic_type": "single",
 	  "topic_prefix": "homebridge"
 	}
