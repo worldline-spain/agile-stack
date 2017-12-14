@@ -97,20 +97,17 @@ services:
       - 9001:9001/tcp
     restart: always
 
-#  agile-hombridge:
-#   container_name: agile-hombridge
-#   image: jordiescudero/wle-homebridge:0.1.1
-#   depends_on:
-#      - agile-mqtt
-#   hostname: agile-hombridge
-#   network_mode: "host"
-#   restart: always
-#   volumes:
-#      - /mnt/data/rpi-docker-homebridge-homeassistant:/root
-#      - /etc/localtime:/etc/localtime
-#   ports:
-#      - "5353:5353"
-#      - "51826:51826"
+  agile-hombridge:
+   container_name: agile-hombridge
+   image: jordiescudero/wle-homebridge:0.1.2
+   depends_on:
+      - agile-mqtt
+   hostname: agile-hombridge
+   network_mode: "host"
+   restart: always
+   ports:
+      - "5353:5353"
+      - "51826:51826"
 #   links:
 #      - agile-mqtt:mqtt
 
