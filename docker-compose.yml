@@ -55,7 +55,7 @@ services:
       - 1880:1880/tcp
     links:
       - agile-core:agile
-      - agile-mqtt:mqtt
+      - agile-mqtt:mqtt      
     restart: always
 
   agile-security:
@@ -96,18 +96,22 @@ services:
       - 1883:1883/tcp
       - 9001:9001/tcp
     restart: always
-
-  agile-hombridge:
-   container_name: agile-hombridge
-   image: jordiescudero/wle-homebridge:0.1.2
-   depends_on:
-      - agile-mqtt
-   hostname: agile-hombridge
-   network_mode: "host"
-   restart: always
-   ports:
-      - "5353:5353"
-      - "51826:51826"
+# docker run --network="host" --restart="always"  jordiescudero/wle-homebridge:0.1.2
+# docker run --network="host" --restart="always" -d -v /mnt/data/homebridge:/root/.homebridge jordiescudero/wle-homebridge:0.1.2
+#  agile-homebridge:
+#   container_name: agile-homebridge
+#   image: jordiescudero/wle-homebridge:0.1.2
+#   depends_on:
+#      - agile-mqtt
+#   hostname: agile-homebridge
+#   network_mode: "host"
+#   restart: always
+#  privileged: true
+#   volumes:
+#      - /mnt/data/homebridge:/root/.homebridge
+#   ports:
+#      - "5353:5353"
+#      - "51826:51826"
 #   links:
 #      - agile-mqtt:mqtt
 
