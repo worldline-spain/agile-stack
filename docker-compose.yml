@@ -4,7 +4,7 @@ services:
 
   agile-dbus:
     container_name: agile-dbus
-    image: jordiescudero/wle-agile-dbus:1.3
+    image: jordiescudero/wle-agile-dbus:$WLE_VERSION
     restart: always
     volumes:
       - $DBUS_SESSION_SOCKET_DIR:/usr/src/app/.agile_bus
