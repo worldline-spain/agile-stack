@@ -82,6 +82,7 @@ services:
       - agile-dbus
     devices:
       - /dev/ttyAMA0:/dev/ttyUSB0
+#      - /dev/ttyUSB0:/dev/ttyUSB0
     volumes:
       - $DBUS_SESSION_SOCKET_DIR:/usr/src/app/.agile_bus
     environment:
